@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
+NEW_URL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
 TOKEN = os.environ['DISCORD_TOKEN']
 
 client = discord.Client() 
@@ -30,5 +31,15 @@ async def on_message(message):
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
         await message.channel.send(bat_team + '\n' + bat_score + '\n' + bowl_team + '\n' + bowl_score)
 
+    if message.content.startswith('$orange cap'): 
+        page_cap = requests.get(NEW_URL) 
+        cap_soup = BeautifulSoup(page_cap.content, 'html.parser')
+        stats_table = cap_soup.find('div', id = "seriesStatsTable")
+        tbody = stats_table.find('tbody')
+        tr = tbody.find('tr')
+        orange_cap = tr.find(class_ = "cb-text-link").text
+        tds = tr.find_all('td')
+        tds = list(map(lambda x: x.text, tds))
+        await message.channel.send(orange_cap + " with " + tds[4] + " runs")
 
 client.run(TOKEN)
