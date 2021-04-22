@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
+NEW_URL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
 TOKEN = os.environ['DISCORD_TOKEN']
 
@@ -64,5 +65,15 @@ async def on_message(message):
             msg_txt += desc
         await message.channel.send(msg_txt)
 
+    if message.content.startswith('$orange cap'): 
+        page_cap = requests.get(NEW_URL) 
+        cap_soup = BeautifulSoup(page_cap.content, 'html.parser')
+        stats_table = cap_soup.find('div', id = "seriesStatsTable")
+        tbody = stats_table.find('tbody')
+        tr = tbody.find('tr')
+        orange_cap = tr.find(class_ = "cb-text-link").text
+        tds = tr.find_all('td')
+        tds = list(map(lambda x: x.text, tds))
+        await message.channel.send(orange_cap + " with " + tds[4] + " runs")
 
 client.run(TOKEN)
