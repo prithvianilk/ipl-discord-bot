@@ -28,7 +28,18 @@ async def on_message(message):
         bat = soup.find(class_ = 'cb-hmscg-bat-txt') 
         bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
-        await message.channel.send(bat_team + '\n' + bat_score + '\n' + bowl_team + '\n' + bowl_score)
+        summary = soup.find(class_ = 'cb-text-complete').text
+        title = bat_team + ' vs ' + bowl_team 
+        await message.channel.send(
+            title + '\n' + 
+            summary + '\n' +
+            (len(summary) * '-') + '\n' + 
+            bat_team + '\n' + 
+            bat_score + '\n' + 
+            bowl_team + '\n' + 
+            bowl_score + '\n' + 
+            (len(summary) * '-') 
+        )
 
 
 client.run(TOKEN)
