@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
-NEW_URL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
+OCAPURL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
 PCAPURL = "https://www.sportskeeda.com/go/ipl/purple-cap?ref=carousel"
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
 TOKEN = os.environ['DISCORD_TOKEN']
@@ -52,7 +52,7 @@ async def on_message(message):
         names = list(map(lambda x: x.find('a').text, soup.find_all(class_ = 'cb-srs-pnts-name')))
         msg_txt = ""
         for i in range(len(table_data)):
-            msg_txt = msg_txt + '-> ' + names[i] + '\n'
+            msg_txt = msg_txt + str(i+1) + '. ' + names[i] + '\n'
             desc = ""
             for j in range(len(table_data[i])):
                 desc = desc + headers[j] + ' : ' + table_data[i][j] + '\n'
@@ -60,7 +60,7 @@ async def on_message(message):
         await message.channel.send(msg_txt)
 
     if message.content.startswith('$orange-cap'): 
-        page_cap = requests.get(NEW_URL) 
+        page_cap = requests.get(OCAPURL) 
         cap_soup = BeautifulSoup(page_cap.content, 'html.parser')
         stats_table = cap_soup.find('div', id = "seriesStatsTable")
         tbody = stats_table.find('tbody')
