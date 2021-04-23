@@ -21,8 +21,18 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.author == client.user:
-        return
-        
+        return  
+
+    if message.content.startswith('$help'):
+        commands = [
+         '$score - Gives live score of ongoing/recent IPL match\n',
+         '$table - Gives entire points table of the IPL season\n',
+         '$orange-cap - Gives the current Orange Cap holder of the IPL season\n',
+         '$purple-cap - Gives the current Purple Cap holder of the IPL season\n'
+        ]
+
+        await message.channel.send( 'List of commands:\n\n' + '\n'.join(commands) )
+
     if message.content.startswith('$score'): 
         page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -78,6 +88,6 @@ async def on_message(message):
         tds_pcap = tr_pcap.find_all('td')
         tds_pcap = list(map(lambda x: x.text, tds_pcap))
         await message.channel.send(tds_pcap[1].replace('\n', '') + " with " + tds_pcap[6].replace('\n', '') + " wickets! ")
-        
+
 
 client.run(TOKEN)
