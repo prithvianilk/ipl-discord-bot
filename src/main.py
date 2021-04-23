@@ -78,6 +78,6 @@ async def on_message(message):
         tds_pcap = tr_pcap.find_all('td')
         tds_pcap = list(map(lambda x: x.text, tds_pcap))
         await message.channel.send(tds_pcap[1].replace('\n', '') + " with " + tds_pcap[6].replace('\n', '') + " wickets! ")
-        k
+        
 
 client.run(TOKEN)
