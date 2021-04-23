@@ -77,9 +77,7 @@ async def on_message(message):
         tr_pcap = keeda_pcap.find_all('tr')[1]
         tds_pcap = tr_pcap.find_all('td')
         tds_pcap = list(map(lambda x: x.text, tds_pcap))
-        #print(tds_pcap)
-        await message.channel.send(tds_pcap[1].replace('\n','') + " with " + tds_pcap[6].replace('\n','') + " wickets! ")
-
-    
+        await message.channel.send(tds_pcap[1].replace('\n', '') + " with " + tds_pcap[6].replace('\n', '') + " wickets! ")
+        k
 
 client.run(TOKEN)
