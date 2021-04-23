@@ -1,13 +1,13 @@
 import os 
 import discord 
 import requests 
-from tabulate import tabulate
 from bs4 import BeautifulSoup 
 from dotenv import load_dotenv 
 
 load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 NEW_URL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
+PCAPURL = "https://www.sportskeeda.com/go/ipl/purple-cap?ref=carousel"
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
 TOKEN = os.environ['DISCORD_TOKEN']
 
@@ -21,7 +21,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
+        
     if message.content.startswith('$score'): 
         page = requests.get(URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -65,7 +65,7 @@ async def on_message(message):
             msg_txt += desc
         await message.channel.send(msg_txt)
 
-    if message.content.startswith('$orange cap'): 
+    if message.content.startswith('$orange-cap'): 
         page_cap = requests.get(NEW_URL) 
         cap_soup = BeautifulSoup(page_cap.content, 'html.parser')
         stats_table = cap_soup.find('div', id = "seriesStatsTable")
@@ -74,6 +74,18 @@ async def on_message(message):
         orange_cap = tr.find(class_ = "cb-text-link").text
         tds = tr.find_all('td')
         tds = list(map(lambda x: x.text, tds))
-        await message.channel.send(orange_cap + " with " + tds[4] + " runs")
+        await message.channel.send(orange_cap + " with " + tds[4] + " runs!")
+
+    if message.content.startswith('$purple-cap'): 
+        page_pcap = requests.get(PCAPURL) 
+        soup_pcap = BeautifulSoup(page_pcap.content, 'html.parser')
+        keeda_pcap = soup_pcap.find(class_ = "keeda_widget")
+        tr_pcap = keeda_pcap.find_all('tr')[1]
+        tds_pcap = tr_pcap.find_all('td')
+        tds_pcap = list(map(lambda x: x.text, tds_pcap))
+        #print(tds_pcap)
+        await message.channel.send(tds_pcap[1].replace('\n','') + " with " + tds_pcap[6].replace('\n','') + " wickets! ")
+
+    
 
 client.run(TOKEN)
