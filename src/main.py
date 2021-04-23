@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
+LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 NEW_URL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
 PCAPURL = "https://www.sportskeeda.com/go/ipl/purple-cap?ref=carousel"
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
@@ -23,26 +24,19 @@ async def on_message(message):
         return
         
     if message.content.startswith('$score'): 
-        page = requests.get(URL) 
+        page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
+        summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
         bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
         bowl_team = bowl.find(class_ = 'cb-hmscg-tm-nm').text 
         bowl_score = bowl.find(style = 'display:inline-block; width:140px').text 
         bat = soup.find(class_ = 'cb-hmscg-bat-txt') 
         bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
-        summary = soup.find(class_ = 'cb-text-complete').text
-        title = bat_team + ' vs ' + bowl_team 
-        await message.channel.send(
-            title + '\n' + 
-            summary + '\n' +
-            (len(summary) * '-') + '\n' + 
-            bat_team + '\n' + 
-            bat_score + '\n' + 
-            bowl_team + '\n' + 
-            bowl_score + '\n' + 
-            (len(summary) * '-') 
-        )
+        desc = soup.find(class_ = 'cb-text-live').text
+        message_list = [('-' * 50), summary, bat_team, bat_score, bowl_team, bowl_score, desc, ('-' * 50)]
+        message_text = '\n'.join(message_list)
+        await message.channel.send(message_text)
 
     if message.content.startswith('$table'):
         page = requests.get(TABLE_URL) 
