@@ -25,7 +25,7 @@ async def on_message(message):
 
     if message.content.startswith('$help'):
         commands = [
-         '$score - Gives live score of ongoing/recent IPL match\n',
+         '$score - Gives live score of ongoing IPL match\n',
          '$table - Gives entire points table of the IPL season\n',
          '$orange-cap - Gives the current Orange Cap holder of the IPL season\n',
          '$purple-cap - Gives the current Purple Cap holder of the IPL season\n'
@@ -36,6 +36,10 @@ async def on_message(message):
     if message.content.startswith('$score'): 
         page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
+        live_scores = list(map(lambda x: x.text, soup.find(class_ = 'cb-rank-tabs').find('nav').find_all('a')))
+        if live_scores[0] == 'International' or live_scores[0] == 'Domestic':
+            await message.channel.send('No ongoing IPL match')
+            return 
         summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
         bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
         bowl_team = bowl.find(class_ = 'cb-hmscg-tm-nm').text 
