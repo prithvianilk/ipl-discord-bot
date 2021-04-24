@@ -96,7 +96,7 @@ async def on_message(message):
         tds = tr.find_all('td')
         tds = list(map(lambda x: x.text, tds))
 
-        embedVar_ocap = discord.Embed(title=" Orange Cap", color=0xFFD700)
+        embedVar_ocap = discord.Embed(title=" Orange Cap", color=0xFFA500)
         embedVar_ocap.add_field(name = orange_cap , value = " Runs : " + tds[4] + "\n\n For more information, visit [criccbuzz]({})".format(STATS_URL), inline=False)
         await message.channel.send(embed=embedVar_ocap)
 
@@ -108,7 +108,7 @@ async def on_message(message):
         tds_pcap = tr_pcap.find_all('td')
         tds_pcap = list(map(lambda x: x.text, tds_pcap))
 
-        embedVar_pcap = discord.Embed(title=" Purple Cap", color=0xFFD700)
+        embedVar_pcap = discord.Embed(title=" Purple Cap", color=0x8A2BE2)
         embedVar_pcap.add_field(name = tds_pcap[1].replace('\n', '') , value = " Wickets : " + tds_pcap[6].replace('\n', '') + "\n\n For more information, visit [criccbuzz]({})".format(STATS_URL), inline=False)
         await message.channel.send(embed=embedVar_pcap)
 
