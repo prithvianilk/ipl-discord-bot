@@ -25,12 +25,11 @@ async def on_message(message):
 
     if message.content.startswith('$help'):
         commands = [
-         '$score - Gives live score of ongoing IPL match\n',
-         '$table - Gives entire points table of the IPL season\n',
-         '$orange-cap - Gives the current Orange Cap holder of the IPL season\n',
-         '$purple-cap - Gives the current Purple Cap holder of the IPL season\n'
+            '`$score` - Gives live score of ongoing IPL match\n',
+            '`$table` - Gives entire points table of the IPL season\n',
+            '`$orange-cap` - Gives the current Orange Cap holder of the IPL season\n',
+            '`$purple-cap` - Gives the current Purple Cap holder of the IPL season\n'
         ]
-
         await message.channel.send( 'List of commands:\n\n' + '\n'.join(commands) )
 
     if message.content.startswith('$score'): 
