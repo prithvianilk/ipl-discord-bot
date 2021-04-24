@@ -10,6 +10,8 @@ LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
 PCAPURL = "https://www.sportskeeda.com/go/ipl/purple-cap?ref=carousel"
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
+STATS_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats'
+
 TOKEN = os.environ['DISCORD_TOKEN']
 
 client = discord.Client() 
@@ -30,7 +32,10 @@ async def on_message(message):
             '`$orange-cap` - Gives the current Orange Cap holder of the IPL season\n',
             '`$purple-cap` - Gives the current Purple Cap holder of the IPL season\n'
         ]
-        await message.channel.send( 'List of commands:\n\n' + '\n'.join(commands) )
+
+        embedVar_help = discord.Embed(title="Commands", color= 0xFFD700)
+        embedVar_help.add_field(name="List of Commands\n", value = '\n'.join(commands), inline=False)
+        await message.channel.send(embed=embedVar_help)
 
     if message.content.startswith('$score'): 
         page = requests.get(LIVE_SCORES_URL) 
@@ -47,11 +52,17 @@ async def on_message(message):
         bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
         desc = soup.find(class_ = 'cb-text-live').text
-        message_list = [('-' * 50), summary, bat_team, bat_score, bowl_team, bowl_score, desc, ('-' * 50)]
+        message_list = [bat_team, bat_score, bowl_team, bowl_score, desc]
         message_text = '\n'.join(message_list)
-        await message.channel.send(message_text)
+
+        embedVar_score = discord.Embed(title=" IPL Score", color=0xFFD700)
+        embedVar_score.add_field(name = summary, value = message_text + "\n\n For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+        await message.channel.send(embed=embedVar_score)
 
     if message.content.startswith('$table'):
+        
+        embedVar_table = discord.Embed(title=" IPL Points Table", color=0xFFD700)
+
         page = requests.get(TABLE_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
         tbody = soup.find('tbody')
@@ -70,7 +81,10 @@ async def on_message(message):
             for j in range(len(table_data[i])):
                 desc = desc + headers[j] + ' : ' + table_data[i][j] + '\n'
             msg_txt += desc
-        await message.channel.send(msg_txt)
+            embedVar_table.add_field(name = str(i+1) + '. ' + names[i] , value = desc, inline=False)
+           
+        embedVar_table.add_field( name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
+        await message.channel.send(embed=embedVar_table)
 
     if message.content.startswith('$orange-cap'): 
         page_cap = requests.get(OCAPURL) 
@@ -81,7 +95,10 @@ async def on_message(message):
         orange_cap = tr.find(class_ = "cb-text-link").text
         tds = tr.find_all('td')
         tds = list(map(lambda x: x.text, tds))
-        await message.channel.send(orange_cap + " with " + tds[4] + " runs!")
+
+        embedVar_ocap = discord.Embed(title=" Orange Cap", color=0xFFD700)
+        embedVar_ocap.add_field(name = orange_cap , value = " Runs : " + tds[4] + "\n\n For more information, visit [criccbuzz]({})".format(STATS_URL), inline=False)
+        await message.channel.send(embed=embedVar_ocap)
 
     if message.content.startswith('$purple-cap'): 
         page_pcap = requests.get(PCAPURL) 
@@ -90,7 +107,10 @@ async def on_message(message):
         tr_pcap = keeda_pcap.find_all('tr')[1]
         tds_pcap = tr_pcap.find_all('td')
         tds_pcap = list(map(lambda x: x.text, tds_pcap))
-        await message.channel.send(tds_pcap[1].replace('\n', '') + " with " + tds_pcap[6].replace('\n', '') + " wickets! ")
 
+        embedVar_pcap = discord.Embed(title=" Purple Cap", color=0xFFD700)
+        embedVar_pcap.add_field(name = tds_pcap[1].replace('\n', '') , value = " Wickets : " + tds_pcap[6].replace('\n', '') + "\n\n For more information, visit [criccbuzz]({})".format(STATS_URL), inline=False)
+        await message.channel.send(embed=embedVar_pcap)
 
+        
 client.run(TOKEN)
