@@ -2,9 +2,9 @@ import os
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
-from dotenv import load_dotenv 
+# from dotenv import load_dotenv 
 
-load_dotenv() 
+# load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/stats"
