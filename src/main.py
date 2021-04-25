@@ -54,7 +54,7 @@ async def on_message(message):
         bat = soup.find(class_ = 'cb-hmscg-bat-txt') 
         bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
-        desc = soup.find(class_ = 'cb-text-complete').text
+        desc = soup.find(class_ = 'cb-text-live').text
         message_list = [bat_team, bat_score, bowl_team, bowl_score, desc]
         message_text = '\n'.join(message_list)
 
