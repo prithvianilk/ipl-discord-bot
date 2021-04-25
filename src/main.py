@@ -63,7 +63,6 @@ async def on_message(message):
         await message.channel.send(embed=embedVar_score)
 
     if message.content.startswith('$table'):
-        
         embedVar_table = discord.Embed(title=" IPL Points Table", color=0xFFD700)
 
         page = requests.get(TABLE_URL) 
@@ -77,18 +76,13 @@ async def on_message(message):
             if len(tds) != 0:
                 table_data.append(tds)
         names = list(map(lambda x: x.find('a').text, soup.find_all(class_ = 'cb-srs-pnts-name')))
-        msg_txt = ""
         for i in range(len(table_data)):
-            msg_txt = msg_txt + str(i+1) + '. ' + names[i] + '\n'
             desc = ""
             for j in range(len(table_data[i])):
                 desc = desc + headers[j] + ' : ' + table_data[i][j] + '\n'
-            msg_txt += desc
             embedVar_table.add_field(name = str(i+1) + '. ' + names[i] , value = desc, inline=False)
-           
         embedVar_table.add_field( name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
         await message.channel.send(embed=embedVar_table)
-
 
     if message.content.startswith('$orange-cap'):
         page_ocap = requests.get(OCAPURL) 
