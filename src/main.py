@@ -2,9 +2,9 @@ import os
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
-# from dotenv import load_dotenv 
+from dotenv import load_dotenv 
 
-# load_dotenv() 
+load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = 'https://www.sportskeeda.com/go/ipl/orange-cap?ref=carousel'
@@ -42,6 +42,7 @@ async def on_message(message):
         page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
         live_scores = list(map(lambda x: x.text, soup.find(class_ = 'cb-rank-tabs').find('nav').find_all('a')))
+
         if live_scores[0] == 'International' or live_scores[0] == 'Domestic':
             embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
             embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
@@ -49,6 +50,14 @@ async def on_message(message):
             return 
             
         summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
+        preview = soup.find(class_ = 'cb-text-preview')
+
+        if preview != None:
+            embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+            embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+            await message.channel.send(embed=embedVar_score)
+            return 
+
         bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
         bowl_team = bowl.find(class_ = 'cb-hmscg-tm-nm').text 
         bowl_score = bowl.find(style = 'display:inline-block; width:140px').text 
@@ -56,15 +65,8 @@ async def on_message(message):
         bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
         bat_score = bat.find(style = 'display:inline-block; width:140px').text 
 
-        preview = soup.find(class_ = 'cb-text-preview')
         live = soup.find(class_ = 'cb-text-live')
         complete = soup.find(class_ = 'cb-text-complete')
-
-        if preview != None:
-            embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
-            embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-            await message.channel.send(embed=embedVar_score)
-            return 
         
         desc = live if live != None else complete
         
@@ -92,7 +94,7 @@ async def on_message(message):
             desc = ""
             for j in range(len(table_data[i])):
                 desc = desc + headers[j] + ' : ' + table_data[i][j] + '\n'
-            embedVar_table.add_field(name = str(i+1) + '. ' + names[i] , value = desc, inline=False)
+            embedVar_table.add_field(name = str(i + 1) + '. ' + names[i] , value = desc, inline=False)
         embedVar_table.add_field( name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
         await message.channel.send(embed=embedVar_table)
 
