@@ -2,9 +2,9 @@ import os
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
-from dotenv import load_dotenv 
+# from dotenv import load_dotenv 
 
-load_dotenv() 
+# load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = 'https://www.sportskeeda.com/go/ipl/orange-cap?ref=carousel'
@@ -14,6 +14,8 @@ STATS_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-
 TEAMS = ['RCB', 'CSK', 'PBKS', 'MI', 'DC', 'KKR', 'SRH', 'RR']
 
 TOKEN = os.environ['DISCORD_TOKEN']
+PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
+PREFIX = '${}'.format('dev-' if PYTHON_ENV == 'dev' else '') # Must be added to every 'starts with' command case
 
 client = discord.Client() 
 
@@ -26,7 +28,7 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if message.content.startswith('$help'):
+    if message.content.startswith(PREFIX + 'help'):
         commands = [
             '`$score` - Gives live score of ongoing IPL match',
             '`$table` - Gives entire points table of the IPL season',
@@ -38,7 +40,7 @@ async def on_message(message):
         embedVar_help.add_field(name="List of Commands\n", value = '\n\n'.join(commands), inline=False)
         await message.channel.send(embed=embedVar_help)
 
-    if message.content.startswith('$score'): 
+    if message.content.startswith(PREFIX + 'score'): 
         page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
         live_scores = list(map(lambda x: x.text, soup.find(class_ = 'cb-rank-tabs').find('nav').find_all('a')))
@@ -72,11 +74,13 @@ async def on_message(message):
         
         message_list = [bat_team, bat_score, bowl_team, bowl_score, desc.text]
         message_text = '\n'.join(message_list)
+
         embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
         embedVar_score.add_field(name = summary, value = message_text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-        await message.channel.send(embed=embedVar_score)
 
-    if message.content.startswith('$table'):
+        await message.channel.send(embed = embedVar_score)
+
+    if message.content.startswith(PREFIX + 'table'):
         embedVar_table = discord.Embed(title=" IPL Points Table", color=0xFFD700)
 
         page = requests.get(TABLE_URL) 
@@ -101,7 +105,7 @@ async def on_message(message):
         embedVar_table.add_field( name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
         await message.channel.send(embed=embedVar_table)
 
-    if message.content.startswith('$orange-cap'):
+    if message.content.startswith(PREFIX + 'orange-cap'):
         page_ocap = requests.get(OCAPURL) 
         soup_ocap = BeautifulSoup(page_ocap.content, 'html.parser')
         keeda_ocap = soup_ocap.find(class_ = "keeda_widget")
@@ -123,7 +127,7 @@ async def on_message(message):
         await message.channel.send(embed=embedVar_ocap)
 
 
-    if message.content.startswith('$purple-cap'): 
+    if message.content.startswith(PREFIX + 'purple-cap'): 
         page_pcap = requests.get(PCAPURL) 
         soup_pcap = BeautifulSoup(page_pcap.content, 'html.parser')
         keeda_pcap = soup_pcap.find(class_ = "keeda_widget")
