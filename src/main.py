@@ -5,8 +5,8 @@ import table
 import orange
 import purple
 
-# from dotenv import load_dotenv 
-# load_dotenv() 
+from dotenv import load_dotenv 
+load_dotenv() 
 
 URL = 'https://www.cricbuzz.com/'
 
