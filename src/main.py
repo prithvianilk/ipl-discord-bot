@@ -2,9 +2,9 @@ import os
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
-# from dotenv import load_dotenv 
+from dotenv import load_dotenv 
 
-# load_dotenv() 
+load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = 'https://www.sportskeeda.com/go/ipl/orange-cap?ref=carousel'
@@ -16,6 +16,7 @@ TEAMS = ['RCB', 'CSK', 'PBKS', 'MI', 'DC', 'KKR', 'SRH', 'RR']
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
 PREFIX = '${}'.format('dev-' if PYTHON_ENV == 'dev' else '') # Must be added to every 'starts with' command case
+
 
 client = discord.Client() 
 
@@ -43,13 +44,20 @@ async def on_message(message):
     if message.content.startswith(PREFIX + 'score'): 
         page = requests.get(LIVE_SCORES_URL) 
         soup = BeautifulSoup(page.content, 'html.parser')
-        live_scores = list(map(lambda x: x.text, soup.find(class_ = 'cb-rank-tabs').find('nav').find_all('a')))
 
-        if live_scores[0] == 'International' or live_scores[0] == 'Domestic':
+        rank_tabs = soup.find(class_ = 'cb-rank-tabs').find('nav')
+        if rank_tabs == None:
             embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
-            embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-            await message.channel.send(embed=embedVar_score)
-            return 
+            embedVar_score.add_field(name = 'No ongoing IPL match', value = "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline = False)
+            await message.channel.send(embed = embedVar_score)
+            return
+            
+        live_scores = list(map(lambda x: x.text, rank_tabs.find_all('a')))
+        if live_scores[0] != 'League':
+            embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+            embedVar_score.add_field(name = 'No ongoing IPL match', value = "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline = False)
+            await message.channel.send(embed = embedVar_score)
+            return
             
         summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
         preview = soup.find(class_ = 'cb-text-preview')
@@ -57,7 +65,7 @@ async def on_message(message):
         if preview != None:
             embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
             embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-            await message.channel.send(embed=embedVar_score)
+            await message.channel.send(embed = embedVar_score)
             return 
 
         bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
@@ -69,7 +77,6 @@ async def on_message(message):
 
         live = soup.find(class_ = 'cb-text-live')
         complete = soup.find(class_ = 'cb-text-complete')
-        
         desc = live if live != None else complete
         
         message_list = [bat_team, bat_score, bowl_team, bowl_score, desc.text]
@@ -99,8 +106,8 @@ async def on_message(message):
             for j in range(len(table_data[i])):
                 desc = desc + headers[j] + ' : ' + table_data[i][j] + '\n'
             embedVar_table.add_field(name = str(i + 1) + '. ' + names[i] , value = desc, inline=False)
-        embedVar_table.add_field( name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
-        await message.channel.send(embed=embedVar_table)
+        embedVar_table.add_field(name = '\u200b' , value = "For more information, visit [criccbuzz]({})".format(TABLE_URL), inline=False)
+        await message.channel.send(embed = embedVar_table)
 
     if message.content.startswith(PREFIX + 'orange-cap'):
         page_ocap = requests.get(OCAPURL) 
@@ -114,14 +121,14 @@ async def on_message(message):
             tds_ocap[i] = tr_ocap[i].find_all('td')
             tds_ocap[i] = list(map(lambda x: x.text, tds_ocap[i]))
 
-        embedVar_ocap = discord.Embed(title=" Orange Cap", color=0xFF8C00)
+        embedVar_ocap = discord.Embed(title = "Orange Cap", color = 0xFF8C00)
 
         for i in range(1, 6):
-            ocap_stats = " Runs : " + tds_ocap[i][6].replace('\n', '') + "\nMatches : " + tds_ocap[i][4].replace('\n', '') + "\nInnings : " + tds_ocap[i][5].replace('\n', '') 
+            ocap_stats = "Runs : " + tds_ocap[i][6].replace('\n', '') + "\nMatches : " + tds_ocap[i][4].replace('\n', '') + "\nInnings : " + tds_ocap[i][5].replace('\n', '') 
             embedVar_ocap.add_field(name = str(i) + '. ' + tds_ocap[i][1].replace('\n', '') , value = tds_ocap[i][2].replace('\n', '') + '\n' + ocap_stats, inline=False)
         
-        embedVar_ocap.add_field( name = '\u200b' , value = "\nFor more information, visit [sportskeeda]({})".format(OCAPURL), inline=False)
-        await message.channel.send(embed=embedVar_ocap)
+        embedVar_ocap.add_field( name = '\u200b', value = "\nFor more information, visit [sportskeeda]({})".format(OCAPURL), inline=False)
+        await message.channel.send(embed = embedVar_ocap)
 
 
     if message.content.startswith(PREFIX + 'purple-cap'): 
@@ -136,7 +143,7 @@ async def on_message(message):
             tds_pcap[i] = tr_pcap[i].find_all('td')
             tds_pcap[i] = list(map(lambda x: x.text, tds_pcap[i]))
 
-        embedVar_pcap = discord.Embed(title=" Purple Cap", color=0x8A2BE2)
+        embedVar_pcap = discord.Embed(title="Purple Cap", color=0x8A2BE2)
         
         for i in range(1, 6):
             pcap_stats = " Wickets : " + tds_pcap[i][6].replace('\n', '') + "\nMatches : " + tds_pcap[i][4].replace('\n', '') + "\nInnings : " + tds_pcap[i][5].replace('\n', '') 
