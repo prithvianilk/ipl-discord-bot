@@ -1,4 +1,3 @@
-import os 
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
@@ -6,14 +5,23 @@ from bs4 import BeautifulSoup
 TEAMS = ['RCB', 'CSK', 'PBKS', 'MI', 'DC', 'KKR', 'SRH', 'RR']
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 
-def score_func():
+
+def get_no_match_message():
+    embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+    embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+    return embedVar_score
+
+def get_score():
     page = requests.get(LIVE_SCORES_URL) 
     soup = BeautifulSoup(page.content, 'html.parser')
-    live_scores = list(map(lambda x: x.text, soup.find(class_ = 'cb-rank-tabs').find('nav').find_all('a')))
+
+    rank_tabs_nav = soup.find(class_ = 'cb-rank-tabs').find('nav')
+    if rank_tabs_nav == None:
+        return get_no_match_message()
+
+    live_scores = list(map(lambda x: x.text, rank_tabs_nav.find_all('a')))
     if live_scores[0] == 'International' or live_scores[0] == 'Domestic':
-        embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
-        embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-        return embedVar_score
+        return get_no_match_message()
             
     summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
     bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
