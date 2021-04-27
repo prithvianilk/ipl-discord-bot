@@ -45,7 +45,7 @@ async def on_message(message):
     if message.content.startswith(PREFIX + 'orange-cap'):
         orange.orange_func()
         await message.channel.send(embed=orange.orange_func())
-    if message.content.startswith('$purple-cap'): 
+    if message.content.startswith(PREFIX + '$purple-cap'): 
         await message.channel.send(embed=purple.purple_func())
 
 client.run(TOKEN)
