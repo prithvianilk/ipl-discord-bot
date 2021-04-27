@@ -2,8 +2,8 @@ import os
 import discord
 from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
 
-from dotenv import load_dotenv 
-load_dotenv() 
+# from dotenv import load_dotenv 
+# load_dotenv() 
 
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
