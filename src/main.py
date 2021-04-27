@@ -2,9 +2,9 @@ import os
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
-# from dotenv import load_dotenv 
+from dotenv import load_dotenv 
 
-# load_dotenv() 
+load_dotenv() 
 URL = 'https://www.cricbuzz.com/'
 LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 OCAPURL = 'https://www.sportskeeda.com/go/ipl/orange-cap?ref=carousel'
@@ -120,8 +120,8 @@ async def on_message(message):
         embedVar_ocap = discord.Embed(title=" Orange Cap", color=0xFF8C00)
 
         for i in range(1, 6):
-            ocap_stats = " Runs : " + tds_ocap[i][6].replace('\n', '') + "\nMatches : " + tds_ocap[i][4].replace('\n', '') + "\nInnings : " + tds_ocap[i][5].replace('\n', '') 
-            embedVar_ocap.add_field(name = str(i) + '. ' + tds_ocap[i][1].replace('\n', '') , value = tds_ocap[i][2].replace('\n', '') + '\n' + ocap_stats, inline=False)
+            ocap_stats = "Matches : " + tds_ocap[i][4].replace('\n', '') + "\nInnings : " + tds_ocap[i][5].replace('\n', '') 
+            embedVar_ocap.add_field(name = str(i) + '. ' + tds_ocap[i][1].replace('\n', '') + " : " + tds_ocap[i][6].replace('\n', '') + " runs" , value = tds_ocap[i][2].replace('\n', '') + '\n' + ocap_stats, inline=False)
         
         embedVar_ocap.add_field( name = '\u200b' , value = "\nFor more information, visit [sportskeeda]({})".format(OCAPURL), inline=False)
         await message.channel.send(embed=embedVar_ocap)
@@ -142,8 +142,8 @@ async def on_message(message):
         embedVar_pcap = discord.Embed(title=" Purple Cap", color=0x8A2BE2)
         
         for i in range(1, 6):
-            pcap_stats = " Wickets : " + tds_pcap[i][6].replace('\n', '') + "\nMatches : " + tds_pcap[i][4].replace('\n', '') + "\nInnings : " + tds_pcap[i][5].replace('\n', '') 
-            embedVar_pcap.add_field(name = str(i) + '. '+ tds_pcap[i][1].replace('\n', '') , value = tds_pcap[i][2].replace('\n', '') + '\n' + pcap_stats, inline=False)
+            pcap_stats = "Matches : " + tds_pcap[i][4].replace('\n', '') + "\nInnings : " + tds_pcap[i][5].replace('\n', '') 
+            embedVar_pcap.add_field(name = str(i) + '. '+ tds_pcap[i][1].replace('\n', '') + " : " + tds_pcap[i][6].replace('\n', '') + " wickets"  , value = tds_pcap[i][2].replace('\n', '') + '\n' + pcap_stats, inline=False)
         
         embedVar_pcap.add_field(name = '\u200b' , value = "\nFor more information, visit [sportskeeda]({})".format(PCAPURL), inline=False) 
         await message.channel.send(embed=embedVar_pcap)
