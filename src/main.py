@@ -1,14 +1,9 @@
 import os
 import discord
-import score
-import table
-import orange
-import purple
+from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
 
 from dotenv import load_dotenv 
 load_dotenv() 
-
-URL = 'https://www.cricbuzz.com/'
 
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
@@ -26,27 +21,18 @@ async def on_message(message):
         return
 
     if message.content.startswith(PREFIX + 'help'):
-        commands = [
-            '`$score` - Gives live score of ongoing IPL match',
-            '`$table` - Gives entire points table of the IPL season',
-            '`$orange-cap` - Gives the current Orange Cap holder of the IPL season',
-            '`$purple-cap` - Gives the current Purple Cap holder of the IPL season'
-        ]
-        embedVar_help = discord.Embed(title = "Commands", color = 0xFFD700)
-        embedVar_help.add_field(name = "List of Commands\n", value = '\n\n'.join(commands), inline=False)
-        await message.channel.send(embed = embedVar_help)
+        await message.channel.send(embed = get_help())
 
     if message.content.startswith(PREFIX + 'score'):
-        await message.channel.send(embed = score.score_func())
+        await message.channel.send(embed = get_score())
 
     if message.content.startswith(PREFIX + 'table'):
-       await message.channel.send(embed = table.table_func())
+       await message.channel.send(embed = get_table())
 
     if message.content.startswith(PREFIX + 'orange-cap'):
-        orange.orange_func()
-        await message.channel.send(embed = orange.orange_func())
+        await message.channel.send(embed = get_orange_cap())
 
-    if message.content.startswith(PREFIX + '$purple-cap'): 
-        await message.channel.send(embed = purple.purple_func())
+    if message.content.startswith(PREFIX + 'purple-cap'): 
+        await message.channel.send(embed = get_purple_cap())
 
 client.run(TOKEN)
