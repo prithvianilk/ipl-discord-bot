@@ -24,6 +24,13 @@ def get_score():
         return get_no_match_message()
             
     summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
+    preview = soup.find(class_ = 'cb-text-preview')
+
+    if preview != None:
+        embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+        embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+        return embedVar_score
+
     bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
     bowl_team = bowl.find(class_ = 'cb-hmscg-tm-nm').text 
     bowl_score = bowl.find(style = 'display:inline-block; width:140px').text 
@@ -31,15 +38,8 @@ def get_score():
     bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
     bat_score = bat.find(style = 'display:inline-block; width:140px').text 
 
-    preview = soup.find(class_ = 'cb-text-preview')
     live = soup.find(class_ = 'cb-text-live')
     complete = soup.find(class_ = 'cb-text-complete')
-
-    if preview != None:
-        embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
-        embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
-        return embedVar_score
-        
     desc = live if live != None else complete
         
     message_list = [bat_team, bat_score, bowl_team, bowl_score, desc.text]
