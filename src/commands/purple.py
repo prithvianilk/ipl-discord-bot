@@ -1,11 +1,10 @@
-import os 
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
 
 PCAPURL = "https://www.sportskeeda.com/go/ipl/purple-cap?ref=carousel"
 
-def purple_func():
+def get_purple_cap():
     page_pcap = requests.get(PCAPURL) 
     soup_pcap = BeautifulSoup(page_pcap.content, 'html.parser')
     keeda_pcap = soup_pcap.find(class_ = "keeda_widget")

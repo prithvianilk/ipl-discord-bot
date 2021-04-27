@@ -1,11 +1,10 @@
-import os 
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
 
 TABLE_URL = 'https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2021/points-table'
 
-def table_func():
+def get_table():
     embedVar_table = discord.Embed(title=" IPL Points Table", color=0xFFD700)
 
     page = requests.get(TABLE_URL) 

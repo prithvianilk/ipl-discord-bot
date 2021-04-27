@@ -1,11 +1,10 @@
-import os 
 import discord 
 import requests 
 from bs4 import BeautifulSoup 
 
 OCAPURL = 'https://www.sportskeeda.com/go/ipl/orange-cap?ref=carousel'
 
-def orange_func():
+def get_orange_cap():
     page_ocap = requests.get(OCAPURL) 
     soup_ocap = BeautifulSoup(page_ocap.content, 'html.parser')
     keeda_ocap = soup_ocap.find(class_ = "keeda_widget")
