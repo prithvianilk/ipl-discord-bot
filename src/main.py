@@ -1,6 +1,6 @@
 import os
 import discord
-from commands import get_score, get_table, get_orange_cap, get_purple_cap
+from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
 
 # from dotenv import load_dotenv 
 # load_dotenv() 
