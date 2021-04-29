@@ -46,6 +46,6 @@ def get_score():
     message_text = '\n'.join(message_list)
 
     embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
-    embedVar_score.add_field(name = summary, value = message_text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+    embedVar_score.add_field(name = score_list[0], value = score_list[1] + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
         
     return embedVar_score
