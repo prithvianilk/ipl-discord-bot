@@ -11,8 +11,16 @@ TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
 PREFIX = '${}'.format('dev-' if PYTHON_ENV == 'dev' else '') # Must be added to every 'starts with' command case
 
-PATH = "{}chromedriver.exe".format('./' if PYTHON_ENV == 'prod' else 'C:\Program Files (x86)\\') 
-driver = webdriver.Chrome(PATH) 
+# to store these paths into heroku environment variables
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+
+# PATH = "{}chromedriver.exe".format('./' if PYTHON_ENV == 'prod' else 'C:\Program Files (x86)\\') 
+# driver = webdriver.Chrome(PATH) 
 driver.get("https://www.iplt20.com/points-table/men/2021") 
 driver.maximize_window()
 tag = driver.find_element_by_tag_name("body")
