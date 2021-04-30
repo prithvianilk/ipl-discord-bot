@@ -7,7 +7,7 @@ LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 
 
 def get_no_match_message():
-    embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+    embedVar_score = discord.Embed(title="IPL Score", color=0x223577)
     embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
     return embedVar_score
 
@@ -27,7 +27,7 @@ def get_score():
     preview = soup.find(class_ = 'cb-text-preview')
 
     if preview != None:
-        embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+        embedVar_score = discord.Embed(title="IPL Score", color=0x223577)
         embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
         return embedVar_score
 
