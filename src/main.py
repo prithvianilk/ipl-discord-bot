@@ -1,5 +1,7 @@
 import os
+import time
 import discord
+from selenium import webdriver
 from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
 
 # from dotenv import load_dotenv 
@@ -8,6 +10,12 @@ from commands import get_help, get_score, get_table, get_orange_cap, get_purple_
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
 PREFIX = '${}'.format('dev-' if PYTHON_ENV == 'dev' else '') # Must be added to every 'starts with' command case
+
+DRIVER_PATH = "./chromedriver"
+
+score_driver = webdriver.Chrome(DRIVER_PATH)
+score_driver.get("https://www.iplt20.com/")
+score_driver.find_elements_by_class_name("btn--inverse")[1].click()
 
 client = discord.Client() 
 
@@ -24,7 +32,7 @@ async def on_message(message):
         await message.channel.send(embed = get_help())
 
     if message.content.startswith(PREFIX + 'score'):
-        await message.channel.send(embed = get_score())
+        await message.channel.send(embed = get_score(score_driver))
 
     if message.content.startswith(PREFIX + 'table'):
        await message.channel.send(embed = get_table())
