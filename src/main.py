@@ -1,4 +1,5 @@
 import os
+import time
 import discord
 from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap, get_squad1, get_squad2
 from selenium import webdriver
@@ -21,11 +22,13 @@ chrome_options.add_argument("--no-sandbox")
 driver1 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 driver2 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 driver3 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+score_path = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
 # PATH = "{}chromedriver.exe".format('./' if PYTHON_ENV == 'prod' else 'C:\Program Files (x86)\\') 
 # driver1 = webdriver.Chrome(PATH) 
 # driver2 = webdriver.Chrome(PATH) 
 # driver3 = webdriver.Chrome(PATH) 
+# score_driver = webdriver.Chrome(PATH)
 
 driver1.get("https://www.iplt20.com/points-table/men/2021") 
 driver1.maximize_window()
@@ -55,6 +58,9 @@ team_2.find_elements_by_tag_name("a")[-1].click()
 element_squad2 = driver3.find_element_by_class_name("teamTabs")
 driver3.execute_script("window.scrollTo(0, {})".format(element_squad2.location['y'] - 50))
 
+score_driver.get("https://www.iplt20.com/")
+score_driver.find_elements_by_class_name("btn--inverse")[1].click()
+
 client = discord.Client() 
 
 @client.event
@@ -70,7 +76,7 @@ async def on_message(message):
         await message.channel.send(embed = get_help())
 
     if message.content.startswith(PREFIX + 'score'):
-        await message.channel.send(embed = get_score())
+        await message.channel.send(embed = get_score(score_driver))
 
     if message.content.startswith(PREFIX + 'table'):
         get_table(driver1)
