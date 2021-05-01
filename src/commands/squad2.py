@@ -18,7 +18,8 @@ def get_squad2(driver):
     right = width - 25
     bottom = height
 
-    im1_cropped = squad1.crop((left, top, right, bottom))
-    im1_cropped.save("squad2.png")
+    # im1_cropped = squad1.crop((left, top, right, bottom))
+    # im1_cropped.save("squad2.png")
+    squad1.save("squad2.png")
 
     return
