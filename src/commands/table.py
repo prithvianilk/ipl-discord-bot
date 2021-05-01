@@ -11,13 +11,15 @@ def get_table(driver):
     im = Image.open(BytesIO(png)) # uses PIL library to open image in memory
     
     width, height = im.size
+    # await message.channel.send(width, height)
 
-    left = 265
-    right = width - 278
-    top = height/2 - 185
-    bottom = height - 200   
+    left = 0
+    right = width - 80
+    top = 0
+    bottom = height + 50
 
     im1_cropped = im.crop((left, top, right, bottom))
     im1_cropped.save("table.png")
+    # im.save("table.png")
 
     return 

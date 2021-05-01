@@ -1,11 +1,12 @@
 import os
 import discord
-from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
+from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap, get_squad1, get_squad2
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
-from dotenv import load_dotenv 
-load_dotenv() 
+# from dotenv import load_dotenv 
+# load_dotenv() 
 
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
@@ -17,16 +18,36 @@ chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
-driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+driver1 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+driver2 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+driver3 = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
 # PATH = "{}chromedriver.exe".format('./' if PYTHON_ENV == 'prod' else 'C:\Program Files (x86)\\') 
-# driver = webdriver.Chrome(PATH) 
-driver.get("https://www.iplt20.com/points-table/men/2021") 
-driver.maximize_window()
-tag = driver.find_element_by_tag_name("body")
+# driver1 = webdriver.Chrome(PATH) 
+# driver2 = webdriver.Chrome(PATH) 
+# driver3 = webdriver.Chrome(PATH) 
 
-element = driver.find_element_by_id("main-content")
-driver.execute_script("window.scrollTo(0, {})".format(element.location['y'] - 190))
+driver1.get("https://www.iplt20.com/points-table/men/2021") 
+driver1.maximize_window()
+tag = driver1.find_element_by_tag_name("body")
+element = driver1.find_element_by_id("main-content")
+driver1.execute_script("window.scrollTo(0, {})".format(element.location['y'] - 190))
+
+driver2.get("https://www.iplt20.com/")
+scorecard_1 = driver2.find_element_by_class_name("homePageTakeover__button--data-only")
+scorecard_1.click()
+time.sleep(1)
+teams_1 = driver2.find_element_by_link_text("Teams")
+teams_1.click()
+
+driver3.get("https://www.iplt20.com/")
+scorecard = driver3.find_element_by_class_name("homePageTakeover__button--data-only")
+scorecard.click()
+time.sleep(1)
+teams = driver3.find_element_by_link_text("Teams")
+teams.click()
+team_2 = driver3.find_element_by_class_name("teamNav")
+team_2.find_elements_by_tag_name("a")[-1].click()
 
 client = discord.Client() 
 
@@ -46,9 +67,17 @@ async def on_message(message):
         await message.channel.send(embed = get_score())
 
     if message.content.startswith(PREFIX + 'table'):
-        get_table(driver)
+        get_table(driver1)
         await message.channel.send(file=discord.File("table.png"))
         os.remove("table.png")
+
+    if message.content.startswith(PREFIX + 'squad'):
+        get_squad1(driver2)
+        get_squad2(driver3)
+        await message.channel.send(file=discord.File("squad1.png"))
+        await message.channel.send(file=discord.File("squad2.png"))
+        os.remove("squad1.png")
+        os.remove("squad2.png")
 
     if message.content.startswith(PREFIX + 'orange-cap'):
         await message.channel.send(embed = get_orange_cap())
