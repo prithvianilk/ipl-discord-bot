@@ -1,12 +1,14 @@
 import os
 import discord
-from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap
+from commands import get_help, get_score, get_table, get_orange_cap, get_purple_cap, get_toggle
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
 from dotenv import load_dotenv 
 load_dotenv() 
 
+test = 0
 TOKEN = os.environ['DISCORD_TOKEN']
 PYTHON_ENV = os.environ['PYTHON_ENV'] # Can be 'dev' or 'prod'
 PREFIX = '${}'.format('dev-' if PYTHON_ENV == 'dev' else '') # Must be added to every 'starts with' command case
@@ -47,5 +49,6 @@ async def on_message(message):
 
     if message.content.startswith(PREFIX + 'purple-cap'): 
         await message.channel.send(embed = get_purple_cap())
+
 
 client.run(TOKEN)
