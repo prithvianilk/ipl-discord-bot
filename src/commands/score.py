@@ -2,30 +2,50 @@ import discord
 import requests 
 from bs4 import BeautifulSoup 
 
-def get_details(team):
-    detail_names = ["teamFull", "runs", "runRate", "overs"]
-    return list(map(lambda x: team.find_element_by_class_name(x).text, detail_names))
-
-def get_batsmen(driver):
-    teamScore = driver.find_element_by_class_name("teamScorecard")
-    batsmen_wrapper, _, bowlers_wrapper = teamScore.find_elements_by_class_name("wrapper")
-    batsmen_tr = batsmen_wrapper.find_elements_by_tag_name("tr")
-    batsmen = []
-    for tr in batsmen_tr:
-        tds = tr.find_elements_by_class_name("dismissal")
-        if len(tds) != 0 and tds[0].text == "NOT OUT":
-            player = tr.find_element_by_class_name("player").text
-            runs = tr.find_element_by_class_name("runs").text
-            balls = tr.find_element_by_class_name("balls").text
-            batsmen.append("{}: {} runs from {} balls".format(player, runs, balls))
-    return batsmen
+TEAMS = ['RCB', 'CSK', 'PBKS', 'MI', 'DC', 'KKR', 'SRH', 'RR']
+LIVE_SCORES_URL = 'https://www.cricbuzz.com/cricket-match/live-scores'
 
 
-def get_score(driver):
-    home_team_details, away_team_details = list(map(get_details, driver.find_elements_by_class_name("team-details")))
-    summary = home_team_details[0] + " vs " + away_team_details[0] + "\n" + driver.find_element_by_class_name("summary").text
-    batsman_message = "Batsmen: " + "\n" + "\n".join(get_batsmen(driver))
-    message_text = "\n".join(home_team_details) + "\n" + "\n".join(away_team_details) + "\n\n" + batsman_message + "\n"
-    embed_score = discord.Embed(title = "IPL Score", color = 0x223577)
-    embed_score.add_field(name = summary, value = message_text, inline = False)
-    return embed_score
+def get_no_match_message():
+    embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+    embedVar_score.add_field(name = 'No ongoing IPL match', value =  "For more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+    return embedVar_score
+
+def get_score():
+    page = requests.get(LIVE_SCORES_URL) 
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+    rank_tabs_nav = soup.find(class_ = 'cb-rank-tabs').find('nav')
+    if rank_tabs_nav == None:
+        return get_no_match_message()
+
+    live_scores = list(map(lambda x: x.text, rank_tabs_nav.find_all('a')))
+    if live_scores[0] == 'International' or live_scores[0] == 'Domestic':
+        return get_no_match_message()
+            
+    summary = soup.find(class_ = 'text-hvr-underline').text[: - 1]
+    preview = soup.find(class_ = 'cb-text-preview')
+
+    if preview != None:
+        embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+        embedVar_score.add_field(name = summary, value = preview.text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+        return embedVar_score
+
+    bowl = soup.find(class_ = 'cb-hmscg-bwl-txt') 
+    bowl_team = bowl.find(class_ = 'cb-hmscg-tm-nm').text 
+    bowl_score = bowl.find(style = 'display:inline-block; width:140px').text 
+    bat = soup.find(class_ = 'cb-hmscg-bat-txt') 
+    bat_team = bat.find(class_ = 'cb-hmscg-tm-nm').text 
+    bat_score = bat.find(style = 'display:inline-block; width:140px').text 
+
+    live = soup.find(class_ = 'cb-text-live')
+    complete = soup.find(class_ = 'cb-text-complete')
+    desc = live if live != None else complete
+        
+    message_list = [bat_team, bat_score, bowl_team, bowl_score, desc.text]
+    message_text = '\n'.join(message_list)
+
+    embedVar_score = discord.Embed(title=" IPL Score", color=0x223577)
+    embedVar_score.add_field(name = summary, value = message_text + "\n\nFor more information, visit [criccbuzz]({})".format(LIVE_SCORES_URL), inline=False)
+        
+    return embedVar_score
